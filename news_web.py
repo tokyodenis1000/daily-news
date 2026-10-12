@@ -18,10 +18,12 @@ import trafilatura
 from deep_translator import GoogleTranslator
 
 # ---------- 設定 ----------
-# 我還沒有確認 VOA Learning English 的文章 RSS 網址,所以先留空,
-# 程式會自動偵測網站的 RSS / sitemap。若你找到 RSS 網址,貼在這裡:
-#   ("VOA Learning English", "https://.../rss.xml"),
-FEEDS = []
+# 已確認存在的 VOA RSS(依序優先)。想換來源,把 RSS 網址貼進來即可。
+FEEDS = [
+    ("VOA News", "https://www.voanews.com/api/"),
+    ("VOA Learning English", "https://learningenglish.voanews.com/api/zqmiqol-vomx-tpei-mqp"),  # America's National Parks
+    ("VOA Learning English", "https://learningenglish.voanews.com/podcast/?count=30"),
+]
 SITE_HOME = "https://learningenglish.voanews.com"
 MIN_WORDS = 250
 MAX_WORDS = 900
@@ -107,28 +109,29 @@ def page_links(url, pattern):
 
 
 def candidates():
-    items = []
-    # 1) 有填 RSS 就先用
+    rss = []
     for name, url in FEEDS:
         try:
             feed = feedparser.parse(url, agent=UA["User-Agent"])
-            items += [(name, clean(e.get("title", "")), e["link"])
-                      for e in feed.entries[:PER_FEED] if e.get("link")]
-        except Exception:
-            pass
-    # 2) 直接爬 VOA Learning English 首頁與各單元頁,收集文章連結 /a/數字.html
-    print("爬取 VOA 首頁與單元頁…")
-    sections = page_links(SITE_HOME + "/", r'href="(/z/\d+)"')[:10]
-    for page in [SITE_HOME + "/"] + sections:
-        for link in page_links(page, r'href="(/a/\d+\.html)"'):
-            items.append(("VOA Learning English", "", link))
+            n = [(name, clean(e.get("title", "")), e["link"])
+                 for e in feed.entries[:PER_FEED] if e.get("link")]
+            print(f"RSS {url} -> {len(n)} 篇")
+            rss += n
+        except Exception as e:
+            print(f"RSS {url} 失敗: {e}")
+    scraped = []
+    if len(rss) < 10:  # RSS 不夠才去爬網頁
+        print("爬取 VOA 首頁與單元頁…")
+        sections = page_links(SITE_HOME + "/", r'href="(/z/\d+)"')[:10]
+        for page in [SITE_HOME + "/"] + sections:
+            for link in page_links(page, r'href="(/a/\d+\.html)"'):
+                scraped.append(("VOA Learning English", "", link))
+        scraped.sort(key=lambda it: int(re.search(r"/a/(\d+)", it[2]).group(1)), reverse=True)
     seen, out = set(), []
-    for it in items:
+    for it in rss + scraped:
         if it[2] not in seen:
             seen.add(it[2])
             out.append(it)
-    # 文章編號越大越新:新的排前面,避免抓到首頁側欄的舊文
-    out.sort(key=lambda it: int(re.search(r"/a/(\d+)", it[2]).group(1)), reverse=True)
     print(f"共找到 {len(out)} 個候選連結")
     return out
 
