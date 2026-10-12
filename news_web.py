@@ -232,6 +232,9 @@ h1{font-size:1.35em;margin:.2em 0}
 .zh{color:var(--zh);font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;font-size:.93em;margin:0 0 1.4em}
 .hide-zh .zh{display:none}
 .w{border-radius:3px}
+.pl{background:var(--panel);color:var(--accent);border:0;border-radius:50%;width:1.7em;height:1.7em;margin-right:.5em;font-size:.8em;vertical-align:middle}
+.playing{background:#2f3350;border-radius:6px}
+.bar select{background:var(--panel);color:var(--fg);border:0;border-radius:6px;padding:8px;font-size:14px}
 .w:active{background:#3b4261}
 #sheet{position:fixed;left:0;right:0;bottom:0;background:var(--panel);padding:14px 16px 20px;
  border-top:2px solid var(--accent);transform:translateY(110%);transition:.2s;z-index:10}
@@ -243,10 +246,11 @@ h1{font-size:1.35em;margin:.2em 0}
 <body>
 <header><div id="meta"></div>
 <div class="bar"><button id="bz">中文 顯示/隱藏</button><button id="bm">A−</button><button id="bp">A+</button>
-<button id="bo">原文</button></div></header>
+<button id="bo">原文</button>
+<button id="ba">▶ 全文朗讀</button><select id="rate"><option value="0.7">慢</option><option value="0.85" selected>中</option><option value="1">正常</option></select></div></header>
 <main id="main"></main>
-<div id="sheet"><b id="word"></b><div id="tr"></div>
-<a id="cam" target="_blank">劍橋字典</a><a id="gt" target="_blank">Google 翻譯</a><a href="#" id="close">關閉</a></div>
+<div id="sheet"><b id="word"></b> <button class="pl" id="sp">🔊</button><div id="tr"></div>
+<a id="cam" target="_blank">劍橋字典</a><a id="gt" target="_blank">Google 翻譯</a><a href="#" id="cl">關閉</a></div>
 <script>
 const A = __DATA__;
 const main = document.getElementById('main');
@@ -254,7 +258,7 @@ document.getElementById('meta').textContent = A.date + ' | ' + A.source + ' | ' 
 function wrap(t){ return t.replace(/[A-Za-z][A-Za-z'’-]*/g, m => '<span class="w">'+m+'</span>'); }
 function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
 let h = '<h1>'+wrap(esc(A.title))+'</h1><p class="zh">'+esc(A.zh[0]||'')+'</p>';
-A.paras.forEach((p,i)=>{ h += '<p class="en">'+wrap(esc(p))+'</p><p class="zh">'+esc(A.zh[i+1]||'')+'</p>'; });
+A.paras.forEach((p,i)=>{ h += '<p class="en" id="p'+i+'"><button class="pl" data-i="'+i+'">▶</button>'+wrap(esc(p))+'</p><p class="zh">'+esc(A.zh[i+1]||'')+'</p>'; });
 main.innerHTML = h;
 let fs = +localStorage.fs || 18; const setFs=()=>{main.style.setProperty('--fs',fs+'px');localStorage.fs=fs};
 setFs();
@@ -262,8 +266,22 @@ if(localStorage.hz==='1') main.classList.add('hide-zh');
 bz.onclick=()=>{main.classList.toggle('hide-zh');localStorage.hz=main.classList.contains('hide-zh')?'1':'0'};
 bm.onclick=()=>{fs=Math.max(13,fs-1);setFs()}; bp.onclick=()=>{fs=Math.min(30,fs+1);setFs()};
 bo.onclick=()=>window.open(A.link,'_blank');
+// ---- 朗讀(用手機內建的語音,不需要網路與金鑰)----
+const synth = window.speechSynthesis; let voice=null, playing=false, token=0;
+function pickVoice(){ const v=(synth&&synth.getVoices())||[]; voice=v.find(x=>/en[-_]US/i.test(x.lang)&&/google|natural|enhanced/i.test(x.name))||v.find(x=>/en[-_]US/i.test(x.lang))||v.find(x=>/^en/i.test(x.lang))||null; }
+if(synth){ pickVoice(); synth.onvoiceschanged=pickVoice; }
+function say(text,done){ if(!synth){alert('這個瀏覽器不支援朗讀');return;} const u=new SpeechSynthesisUtterance(text); u.lang='en-US'; if(voice) u.voice=voice; u.rate=+document.getElementById('rate').value; u.onend=done||null; u.onerror=done||null; synth.speak(u); }
+function stopAll(){ token++; playing=false; if(synth) synth.cancel(); ba.textContent='▶ 全文朗讀'; document.querySelectorAll('.playing').forEach(e=>e.classList.remove('playing')); }
+function playFrom(i){ stopAll(); const my=token; playing=true; ba.textContent='⏹ 停止';
+  (function next(k){ if(my!==token||k>=A.paras.length){ if(my===token) stopAll(); return; }
+    const el=document.getElementById('p'+k); document.querySelectorAll('.playing').forEach(e=>e.classList.remove('playing')); el.classList.add('playing'); el.scrollIntoView({block:'center',behavior:'smooth'});
+    say(A.paras[k],()=>{ if(my===token) next(k+1); }); })(i); }
+ba.onclick=()=>{ playing?stopAll():playFrom(0); };
+main.addEventListener('click',e=>{ const b=e.target.closest('.pl'); if(b){ playFrom(+b.dataset.i); } });
+document.getElementById('sp').onclick=()=>{ stopAll(); say(word.textContent); };
+window.addEventListener('pagehide',stopAll);
 const sheet=document.getElementById('sheet');
-close.onclick=e=>{e.preventDefault();sheet.classList.remove('open')};
+document.getElementById('cl').onclick=e=>{e.preventDefault();sheet.classList.remove('open')};
 main.addEventListener('click', async e=>{
   const el=e.target.closest('.w'); if(!el) return;
   const w=el.textContent.replace(/[’]/g,"'"); const lw=w.toLowerCase();
