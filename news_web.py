@@ -9,6 +9,7 @@ import json
 import os
 import re
 import time
+import urllib.parse
 from pathlib import Path
 
 import feedparser
@@ -87,8 +88,26 @@ def clean(t):
     return re.sub(r"\s+", " ", html.unescape(t)).strip()
 
 
+def page_links(url, pattern):
+    """抓一個網頁,回傳符合 pattern 的連結(絕對網址,去重,保持順序)。"""
+    try:
+        r = requests.get(url, headers=UA, timeout=20)
+        print(f"  {url} -> HTTP {r.status_code}, {len(r.text)} bytes")
+        r.raise_for_status()
+    except Exception as e:
+        print(f"  {url} -> 失敗: {e}")
+        return []
+    out = []
+    for m in re.findall(pattern, r.text):
+        u = urllib.parse.urljoin(url, m)
+        if u not in out:
+            out.append(u)
+    return out
+
+
 def candidates():
     items = []
+    # 1) 有填 RSS 就先用
     for name, url in FEEDS:
         try:
             feed = feedparser.parse(url, agent=UA["User-Agent"])
@@ -96,18 +115,18 @@ def candidates():
                       for e in feed.entries[:PER_FEED] if e.get("link")]
         except Exception:
             pass
-    if not items:  # 備援:自動偵測網站的 RSS
-        try:
-            from trafilatura import feeds
-            for u in (feeds.find_feed_urls(SITE_HOME) or [])[:PER_FEED * 2]:
-                items.append(("VOA Learning English", "", u))
-        except Exception:
-            pass
+    # 2) 直接爬 VOA Learning English 首頁與各單元頁,收集文章連結 /a/數字.html
+    print("爬取 VOA 首頁與單元頁…")
+    sections = page_links(SITE_HOME + "/", r'href="(/z/\d+)"')[:10]
+    for page in [SITE_HOME + "/"] + sections:
+        for link in page_links(page, r'href="(/a/\d+\.html)"'):
+            items.append(("VOA Learning English", "", link))
     seen, out = set(), []
     for it in items:
         if it[2] not in seen:
             seen.add(it[2])
             out.append(it)
+    print(f"共找到 {len(out)} 個候選連結")
     return out
 
 
@@ -140,8 +159,10 @@ def fetch_article(seen):
             r = requests.get(link, headers=UA, timeout=20)
             r.raise_for_status()
             t2, paras, words = extract(r.text)
-        except Exception:
+        except Exception as e:
+            print(f"  跳過 {link}: {e}")
             continue
+        print(f"  {link} -> {words} 字")
         if words >= MIN_WORDS:
             return {"source": source, "title": title or t2, "link": link,
                     "paras": paras, "words": words}
