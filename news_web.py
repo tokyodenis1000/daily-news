@@ -133,14 +133,10 @@ def candidates():
     return out
 
 
-def extract(page_html):
-    meta = trafilatura.bare_extraction(page_html, include_comments=False, include_tables=False,
-                                       favor_precision=True)
-    text = (meta.text if meta and hasattr(meta, "text") else (meta or {}).get("text")) or ""
-    title = (meta.title if meta and hasattr(meta, "title") else (meta or {}).get("title")) or ""
+def _trim(lines):
     paras, words = [], 0
-    for p in text.split("\n"):
-        p = p.strip()
+    for p in lines:
+        p = re.sub(r"\s+", " ", p).strip()
         if len(p) < 40:
             continue
         n = len(p.split())
@@ -148,6 +144,40 @@ def extract(page_html):
             break
         paras.append(p)
         words += n
+    return paras, words
+
+
+def extract(page_html):
+    """先用 trafilatura;抽不到夠多字,再用 VOA 網頁的內文區塊(class 含 wsw)備援。"""
+    title, lines = "", []
+    try:
+        meta = trafilatura.bare_extraction(page_html, include_comments=False,
+                                           include_tables=False, favor_recall=True)
+        if meta:
+            get = (lambda k: getattr(meta, k, None) if not isinstance(meta, dict) else meta.get(k))
+            title = get("title") or ""
+            lines = (get("text") or "").split("\n")
+    except Exception as e:
+        print("   trafilatura 失敗:", e)
+    paras, words = _trim(lines)
+
+    if words < MIN_WORDS:
+        try:
+            from lxml import html as lh
+            tree = lh.fromstring(page_html)
+            if not title:
+                h1 = tree.xpath("//h1")
+                title = h1[0].text_content().strip() if h1 else ""
+            alt = [p.text_content() for p in
+                   tree.xpath('//div[contains(concat(" ", normalize-space(@class), " "), " wsw ")]//p')]
+            p2, w2 = _trim(alt)
+            if w2 > words:
+                paras, words = p2, w2
+        except Exception as e:
+            print("   備援抽取失敗:", e)
+    if not title:
+        m = re.search(r"<h1[^>]*>(.*?)</h1>", page_html, re.S)
+        title = clean(m.group(1)) if m else ""
     return title, paras, words
 
 
