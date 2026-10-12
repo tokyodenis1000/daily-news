@@ -1,0 +1,4 @@
+feedparser
+deep-translator
+requests
+trafilatura
