@@ -26,7 +26,8 @@ SITE_HOME = "https://learningenglish.voanews.com"
 MIN_WORDS = 250
 MAX_WORDS = 900
 PER_FEED = 15
-MAX_TRIES = 20
+MAX_TRIES = 45
+FALLBACK_WORDS = 150   # 找不到夠長的,就退而求其次用最長的一篇
 UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
                     "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"}
 
@@ -126,6 +127,8 @@ def candidates():
         if it[2] not in seen:
             seen.add(it[2])
             out.append(it)
+    # 文章編號越大越新:新的排前面,避免抓到首頁側欄的舊文
+    out.sort(key=lambda it: int(re.search(r"/a/(\d+)", it[2]).group(1)), reverse=True)
     print(f"共找到 {len(out)} 個候選連結")
     return out
 
@@ -149,11 +152,10 @@ def extract(page_html):
 
 
 def fetch_article(seen):
-    tried = 0
+    tried, best = 0, None
     for source, title, link in candidates():
         if link in seen:
             continue
-        seen.append(link)
         tried += 1
         try:
             r = requests.get(link, headers=UA, timeout=20)
@@ -163,12 +165,19 @@ def fetch_article(seen):
             print(f"  跳過 {link}: {e}")
             continue
         print(f"  {link} -> {words} 字")
+        art = {"source": source, "title": title or t2, "link": link,
+               "paras": paras, "words": words}
         if words >= MIN_WORDS:
-            return {"source": source, "title": title or t2, "link": link,
-                    "paras": paras, "words": words}
+            seen.append(link)
+            return art
+        if words >= FALLBACK_WORDS and (not best or words > best["words"]):
+            best = art
         if tried >= MAX_TRIES:
             break
-    return None
+    if best:
+        print(f"沒有 {MIN_WORDS} 字以上的,改用最長的一篇({best['words']} 字)")
+        seen.append(best["link"])
+    return best
 
 
 # ---------- 輸出網頁 ----------
