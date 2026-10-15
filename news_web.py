@@ -1,6 +1,8 @@
 """
 每日英文新聞 → 網頁版(給 GitHub Pages 用)
 抓一篇 VOA Learning English 長文 → 逐段翻成繁體中文 → 輸出 docs/index.html
+網頁內可點單字查中文、朗讀,並有「生字本」(存在手機瀏覽器,可測驗、匯出 CSV)。
+
 DeepL key 從環境變數 DEEPL_API_KEY 讀取(GitHub Secrets),不會寫進網頁。
 """
 import datetime as dt
@@ -236,6 +238,21 @@ h1{font-size:1.35em;margin:.2em 0}
 .playing{background:#2f3350;border-radius:6px}
 .bar select{background:var(--panel);color:var(--fg);border:0;border-radius:6px;padding:8px;font-size:14px}
 .w:active{background:#3b4261}
+.w.sv{background:#3b4261;text-decoration:underline}
+#sv{background:var(--accent);color:#000;border:0;border-radius:6px;padding:8px 12px;margin:0 10px 10px 0;font-size:14px}
+#vp{position:fixed;inset:0;background:var(--bg);z-index:20;overflow:auto;padding:14px;display:none}
+#vp.open{display:block}
+#vp .bar{margin-bottom:12px}
+.vi{background:var(--panel);border-radius:8px;padding:10px 12px;margin:0 0 10px;font-size:16px}
+.vi b{color:var(--accent);font-size:1.1em}
+.vi small{display:block;color:#9aa5ce;margin-top:4px;font-size:13px}
+.vi .del{float:right;background:#3b4261;color:var(--fg);border:0;border-radius:6px;padding:4px 8px}
+#qz{text-align:center;padding-top:30px}
+#qn{color:var(--accent);font-weight:bold}
+#qw{font-size:34px;font-weight:bold;margin:24px 0 8px}
+#qa{font-size:22px;color:#c0caf5;min-height:1.4em;font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif}
+#qs{color:#9aa5ce;margin:14px 0 24px;min-height:3em}
+#qb{background:var(--panel);color:var(--fg);border:0;border-radius:8px;padding:12px 28px;font-size:17px}
 #sheet{position:fixed;left:0;right:0;bottom:0;background:var(--panel);padding:14px 16px 20px;
  border-top:2px solid var(--accent);transform:translateY(110%);transition:.2s;z-index:10}
 #sheet.open{transform:none}
@@ -246,11 +263,15 @@ h1{font-size:1.35em;margin:.2em 0}
 <body>
 <header><div id="meta"></div>
 <div class="bar"><button id="bz">中文 顯示/隱藏</button><button id="bm">A−</button><button id="bp">A+</button>
-<button id="bo">原文</button>
+<button id="bo">原文</button><button id="bv">★ 生字本</button>
 <button id="ba">▶ 全文朗讀</button><select id="rate"><option value="0.7">慢</option><option value="0.85" selected>中</option><option value="1">正常</option></select></div></header>
 <main id="main"></main>
 <div id="sheet"><b id="word"></b> <button class="pl" id="sp">🔊</button><div id="tr"></div>
+<button id="sv">★ 加入生字本</button>
 <a id="cam" target="_blank">劍橋字典</a><a id="gt" target="_blank">Google 翻譯</a><a href="#" id="cl">關閉</a></div>
+<div id="vp"><div class="bar"><button id="vx">← 返回文章</button><button id="vq">開始測驗</button><button id="ve">匯出 CSV</button></div>
+<div id="vl"></div>
+<div id="qz"><div id="qn"></div><div id="qw"></div><div id="qa"></div><div id="qs"></div><button id="qb">顯示答案</button></div></div>
 <script>
 const A = __DATA__;
 const main = document.getElementById('main');
@@ -280,18 +301,48 @@ ba.onclick=()=>{ playing?stopAll():playFrom(0); };
 main.addEventListener('click',e=>{ const b=e.target.closest('.pl'); if(b){ playFrom(+b.dataset.i); } });
 document.getElementById('sp').onclick=()=>{ stopAll(); say(word.textContent); };
 window.addEventListener('pagehide',stopAll);
+// ---- 生字本(存在這支手機的瀏覽器裡;清除瀏覽器資料會一起消失,可先匯出 CSV 備份)----
+let V=[]; try{V=JSON.parse(localStorage.vocab||'[]')}catch(_){V=[]}
+const saveV=()=>{try{localStorage.vocab=JSON.stringify(V)}catch(_){}};
+const hasV=w=>V.some(v=>v.word.toLowerCase()===w.toLowerCase());
+function markV(){ const s=new Set(V.map(v=>v.word.toLowerCase())); document.querySelectorAll('.w').forEach(e=>e.classList.toggle('sv',s.has(e.textContent.replace(/[’]/g,"'").toLowerCase()))); }
+function sentenceOf(el){ const p=el.closest('p,h1'); if(!p) return ''; const t=p.textContent.replace(/^▶/,'').trim(); for(const s of t.split(/(?<=[.!?])\s+/)){ if(s.includes(el.textContent)) return s.trim(); } return t; }
+let cur=null;
+markV();
+sv.onclick=()=>{ if(!cur||hasV(cur.word)) return; V.push({word:cur.word,zh:cur.zh||'',sentence:cur.sentence,source:A.source,title:A.title,date:A.date}); saveV(); markV(); sv.textContent='已加入 ✓'; };
+function renderV(){ qz.style.display='none'; vl.style.display='block';
+  vl.innerHTML=V.length?V.slice().reverse().map(v=>'<div class="vi"><button class="del" data-w="'+esc(v.word)+'">刪除</button><b>'+esc(v.word)+'</b> '+esc(v.zh||'')+'<small>'+esc(v.sentence||'')+'</small></div>').join(''):'<p>還沒有生字。點文章裡的單字,再按「★ 加入生字本」。</p>'; }
+vl.addEventListener('click',e=>{ const b=e.target.closest('.del'); if(!b) return; V=V.filter(v=>v.word!==b.dataset.w); saveV(); markV(); renderV(); });
+bv.onclick=()=>{ stopAll(); renderV(); vp.classList.add('open'); };
+vx.onclick=()=>vp.classList.remove('open');
+let Q=[],qi=0,qshown=false;
+function qrender(){ qshown=false; qn.textContent=(qi+1)+'/'+Q.length; qw.textContent=Q[qi].word; qa.textContent=''; qs.textContent=''; qb.textContent='顯示答案'; }
+vq.onclick=()=>{ if(!V.length) return; Q=V.slice().sort(()=>Math.random()-.5); qi=0; vl.style.display='none'; qz.style.display='block'; qrender(); };
+qb.onclick=()=>{
+  if(qi>=Q.length){ renderV(); return; }
+  if(!qshown){ qa.textContent=Q[qi].zh||'(沒有翻譯)'; qs.textContent=Q[qi].sentence||''; qshown=true; qb.textContent=qi+1<Q.length?'下一個':'完成'; }
+  else if(qi+1<Q.length){ qi++; qrender(); }
+  else { qi=Q.length; qn.textContent='完成!'; qw.textContent='複習完了'; qa.textContent=''; qs.textContent=''; qb.textContent='回到清單'; }
+};
+ve.onclick=()=>{ const rows=[['單字','中文','例句','文章來源','文章標題','日期']].concat(V.map(v=>[v.word,v.zh,v.sentence,v.source,v.title,v.date]));
+  const csv='\ufeff'+rows.map(r=>r.map(c=>'"'+String(c||'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})); a.download='vocab.csv'; a.click(); };
+
 const sheet=document.getElementById('sheet');
 document.getElementById('cl').onclick=e=>{e.preventDefault();sheet.classList.remove('open')};
 main.addEventListener('click', async e=>{
   const el=e.target.closest('.w'); if(!el) return;
   const w=el.textContent.replace(/[’]/g,"'"); const lw=w.toLowerCase();
   word.textContent=w; tr.textContent='查詢中…';
+cur={word:w,zh:'',sentence:sentenceOf(el)}; sv.textContent=hasV(w)?'已加入 ✓':'★ 加入生字本';
   cam.href='https://dictionary.cambridge.org/dictionary/english-chinese-traditional/'+encodeURIComponent(lw);
   gt.href='https://translate.google.com/?sl=en&tl=zh-TW&op=translate&text='+encodeURIComponent(w);
   sheet.classList.add('open');
   try{
     const r=await fetch('https://api.mymemory.translated.net/get?q='+encodeURIComponent(lw)+'&langpair=en|zh-TW');
-    const j=await r.json(); tr.textContent=(j.responseData&&j.responseData.translatedText)||'(查不到,請點劍橋字典)';
+    const j=await r.json(); const t=(j.responseData&&j.responseData.translatedText)||''; tr.textContent=t||'(查不到,請點劍橋字典)';
+if(cur&&cur.word===w) cur.zh=t;
+const ex=V.find(v=>v.word.toLowerCase()===lw); if(ex&&!ex.zh&&t){ ex.zh=t; saveV(); }
   }catch(_){ tr.textContent='(查詢失敗,請點劍橋字典)'; }
 });
 </script></body></html>
