@@ -1,42 +1,44 @@
 {
  "article": {
   "source": "VOA News",
-  "title": "UNESCO warns Afghanistan could lose a generation of professionals if ban on girls’ education continues",
-  "link": "https://www.voanews.com/a/unesco-warns-afghanistan-could-lose-a-generation-of-professionals-if-ban-on-girls-education-continues/8221072.html",
+  "title": "Elliptic analytics say North Korea launders stolen Binance funds via homemade meme coins",
+  "link": "https://www.voanews.com/a/elliptic-analytics-say-north-korea-launders-stolen-binance-funds-via-homemade-meme-coins/8221624.html",
   "paras": [
-   "Editor's note: this story was translated from the original VOA Dari article.",
-   "Afghanistan risks losing a generation of future teachers, healthcare professionals and other skilled workers if girls and women remain barred from secondary and higher education, a U.N. official told VOA.",
-   "“Our message is very clear: Afghanistan cannot afford to lose another generation of learners,” Hoda Jaberian, UNESCO Program Coordinator for Education in Emergencies, said in an interview.",
-   "Jaberian called for efforts to bring girls and women back to school, strengthen Afghanistan’s education system and ensure all children “can fully exercise their basic human right to quality education.”",
-   "A U.N. report, released in November, stated that the Taliban ban had excluded an estimated 2.4 million girls from secondary education, while no girls have enrolled in universities in 2026.",
-   "After seizing power in 2021, the Taliban banned girls from secondary education, barred women from attending universities in December 2022 and from studying at medical institutions in December 2024.",
-   "In addition to banning girls from secondary and university education, the Taliban also imposed repressive restrictions on women, barring them from working in government agencies and non-government organizations, going to public parks, beauty salons and gyms, and traveling long distances without a close male relative.",
-   "The group has issued more than 100 decrees that curb women’s and girls’ rights and freedoms, including their right to get an education.",
-   "Jaberian said the first priority is to immediately reopen schools for girls.",
-   "“The return of all girls and women to the education system is fundamental for us, and no alternative learning opportunity can replace their formal schooling,” she added.",
-   "Jaberian, however, said efforts should also prioritize learning opportunities for children and young people currently excluded from education, particularly girls and women.",
-   "She also said that it is important to improve the quality of education in Afghanistan.",
-   "“Strengthening the quality of education through supporting teachers and teaching and learning materials, and of course, ensuring better education data and planning, as you can see within the recently published report.”"
+   "Editor's note: this story was translated from the original VOA Korean article.",
+   "North Korea is laundering cryptocurrency stolen from Binance through homemade meme coins, according to blockchain analytics firm Elliptic, describing it as a scheme designed to resemble ordinary trading and delay investigators.",
+   "The FBI on October 31 attributed the theft of than $6 billion worth of virtual assets from Binance to North Korea.",
+   "North Korea Pyongyang has denied being involved but the FBI says it has identified this specific “North Korean malicious” cyber activity as \"TraderTraitor.\"",
+   "Binance is the world's largest cryptocurrency exchange.",
+   "In its November 9 analysis, Elliptic said those laundering the funds created at least six meme coins on the NEAR blockchain between November 5 and November 7.",
+   "About 117,000 NEAR — worth approximately $430,000 at the time of the analysis — passed through them.",
+   "Meme coins are tokens inspired by internet jokes, animals, or celebrities, with prices driven by online attention and speculation.",
+   "Elliptic assessed that these tokens have no apparent practical purpose other than to move funds within the laundering network.",
+   "Elliptic says the launderers created exchange pools holding their tokens and NEAR wallets that contain stolen NEAR, while other wallets in the network sold the same tokens into those pools and collected NEAR.",
+   "This replaced direct transfers between wallets with purchases and sales, potentially making recipients look like investors earning legitimate trading profits. Elliptic said network wallets conducted all sales of the six tokens. They were traded intensively soon after creation, with no trading since November 8. Each cost about $90 to create.",
+   "All transactions remain publicly recorded on the blockchain, enabling investigators to trace them. But additional steps take time to unravel, helping launderers move funds before the associated wallets are identified, and transactions can be blocked, Elliptic said.",
+   "The Binance theft occurred October 29 across 11 blockchains. Elliptic estimates losses at $6.43 billion, which is the largest cryptocurrency theft ever, according to the FBI.",
+   "Elliptic’s November 9 update put conversions into bitcoin at approximately $225 million, with $2.85 billion frozen or seized and roughly $3 billion remaining in theft-linked addresses."
   ],
-  "words": 333,
+  "words": 348,
   "zh": [
-   "聯合國教科文組織警告，若持續禁止女童接受教育，阿富汗恐將失去整整一代專業人才",
-   "編者註：本文翻譯自美國之音（VOA）達里語原文報導。",
-   "一名聯合國官員向美國之音表示，如果女孩和婦女繼續被剝奪接受中等及高等教育的机会，阿富汗恐將失去一整代未來的教師、醫療專業人員及其他技術人才。",
-   "「我們的訊息非常明確：阿富汗無法承受再失去一代學子的後果，」聯合國教科文組織緊急情況下教育計畫協調員霍達·賈貝里安（Hoda Jaberian）在接受採訪時表示。",
-   "賈貝里安呼籲各方努力讓女童和婦女重返校園，強化阿富汗的教育體系，並確保所有兒童「都能充分行使接受優質教育的基本人權」。",
-   "一份於11月發布的聯合國報告指出，塔利班的禁令導致約240萬名女童無法接受中等教育，而2026年則沒有任何女童入讀大學。",
-   "塔利班於2021年奪取政權後，禁止女童接受中等教育；並於2022年12月禁止女性進入大學就讀，又於2024年12月禁止女性在醫療機構就讀。",
-   "塔利班除了禁止女孩接受中學及大學教育外，還對婦女實施了壓迫性的限制，禁止她們在政府機關及非政府組織工作、前往公共公園、美容院和健身房，以及在沒有近親男性陪同的情況下進行長途旅行。",
-   "該組織已頒布超過100項法令，限制婦女和女童的權利與自由，包括她們接受教育的權利。",
-   "賈貝里安表示，當務之急是立即讓女學生重返校園。",
-   "「讓所有女童和婦女重返教育體系對我們而言至關重要，且任何替代性的學習機會都無法取代她們的正規教育，」她補充道。",
-   "然而，賈貝里安表示，相關努力也應優先考慮目前被排除在教育體系之外的兒童和青少年的學習機會，尤其是女童和婦女。",
-   "她還表示，提高阿富汗的教育品質至關重要。",
-   "「透過支援教師及教學與學習資源來提升教育品質，當然，還包括確保更完善的教育數據與規劃——正如各位在最近發布的報告中所見。」"
+   "Elliptic 分析指出，北韓透過自製的迷因幣洗錢，將從幣安竊取的資金洗白",
+   "編者註：本報導翻譯自美國之音（VOA）的韓文原文。",
+   "根據區塊鏈分析公司 Elliptic 的說法，北韓正透過自製的迷因幣，將從幣安竊取的加密貨幣進行洗錢，並將此描述為一種旨在模仿普通交易、以拖延調查人員的計畫。",
+   "聯邦調查局（FBI）於10月31日將幣安（Binance）遭竊價值逾60億美元的虛擬資產一案歸咎於北韓。",
+   "北韓平壤方面否認涉案，但聯邦調查局（FBI）表示，已將這項具體的「北韓惡意」網路活動定名為「TraderTraitor」。",
+   "幣安是全球最大的加密貨幣交易所。",
+   "Elliptic 在 11 月 9 日的分析報告中指出，這些洗錢者於 11 月 5 日至 11 月 7 日期間，在 NEAR 區塊鏈上創建了至少六種迷因幣。",
+   "約有 117,000 NEAR —— 根據分析當時的匯率，價值約為 430,000 美元 —— 經由這些平台轉出。",
+   "迷因幣是受網路笑話、動物或名人啟發而誕生的代幣，其價格由網路關注度與投機行為所驅動。",
+   "Elliptic 評估認為，這些代幣除了在洗錢網絡內轉移資金之外，並無其他明顯的實際用途。",
+   "Elliptic 指出，洗錢者建立了用於持有其代幣的交易池，以及存放被盜 NEAR 的 NEAR 錢包；同時，網路中的其他錢包則將相同的代幣賣入這些交易池，並收取 NEAR。",
+   "此舉將錢包之間的直接轉帳改為買賣交易，這可能使收款人看起來像是透過合法交易獲利的投資者。Elliptic 指出，這六種代幣的所有銷售交易均由網路錢包執行。這些代幣在創建後不久便出現密集交易，但自 11 月 8 日起便再無交易紀錄。每枚代幣的創建成本約為 90 美元。",
+   "所有交易都會公開記錄在區塊鏈上，讓調查人員能夠追蹤這些交易。但 Elliptic 指出，要釐清這些交易還需額外步驟，這會耗費時間，反而讓洗錢者在相關錢包被識別出來、交易遭到封鎖之前，有時間轉移資金。",
+   "幣安（Binance）盜竊案發生於 10 月 29 日，涉及 11 條區塊鏈。據 FBI 表示，Elliptic 估計損失金額達 64.3 億美元，這是有史以來規模最大的加密貨幣盜竊案。",
+   "根據 Elliptic 於 11 月 9 日發布的最新數據，轉換為比特幣的金額約為 2.25 億美元，其中 28.5 億美元已被凍結或扣押，而與盜竊案相關的地址中仍剩餘約 30 億美元。"
   ],
-  "zh_for": "https://www.voanews.com/a/unesco-warns-afghanistan-could-lose-a-generation-of-professionals-if-ban-on-girls-education-continues/8221072.html",
-  "date": "2026-11-10"
+  "zh_for": "https://www.voanews.com/a/elliptic-analytics-say-north-korea-launders-stolen-binance-funds-via-homemade-meme-coins/8221624.html",
+  "date": "2026-11-11"
  },
  "seen": [
   "https://www.voanews.com/a/us-says-taliban-failing-to-combat-human-trafficking-in-afghanistan/8209667.html",
@@ -71,6 +73,7 @@
   "https://www.voanews.com/a/north-koreas-binance-hack-raises-global-financial-security-concerns/8219819.html",
   "https://www.voanews.com/a/taliban-destroys-650-musical-instruments-citing-music-ban/8219823.html",
   "https://www.voanews.com/a/displaced-kurds-return-to-destroyed-homes-in-northeast-syria/8219775.html",
-  "https://www.voanews.com/a/unesco-warns-afghanistan-could-lose-a-generation-of-professionals-if-ban-on-girls-education-continues/8221072.html"
+  "https://www.voanews.com/a/unesco-warns-afghanistan-could-lose-a-generation-of-professionals-if-ban-on-girls-education-continues/8221072.html",
+  "https://www.voanews.com/a/elliptic-analytics-say-north-korea-launders-stolen-binance-funds-via-homemade-meme-coins/8221624.html"
  ]
 }
